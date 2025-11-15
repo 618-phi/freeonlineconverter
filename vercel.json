@@ -1,0 +1,45 @@
+{
+  "functions": {
+    "src/pages/api/convert.ts": {
+      "maxDuration": 10,
+      "memory": 1024
+    },
+    "src/pages/api/formats.ts": {
+      "maxDuration": 5,
+      "memory": 256
+    },
+    "src/pages/api/health.ts": {
+      "maxDuration": 5,
+      "memory": 256
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Content-Disposition"
+        },
+        {
+          "key": "Access-Control-Max-Age",
+          "value": "86400"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
+    }
+  ]
+}

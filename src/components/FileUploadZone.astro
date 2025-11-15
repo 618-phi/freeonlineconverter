@@ -1,0 +1,380 @@
+---
+// FileUploadZone component - Drag and drop file upload area
+---
+
+<div
+  id="upload-zone"
+  class="upload-zone"
+  role="button"
+  tabindex="0"
+  aria-label="Upload file area. Click to select a file or drag and drop a file here."
+>
+  <div class="upload-content">
+    <svg
+      class="upload-icon"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      aria-hidden="true"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+      />
+    </svg>
+    <h3 class="upload-title">Drop your file here</h3>
+    <p class="upload-subtitle">or click to browse</p>
+    <p class="upload-hint">Supported: JPG, PNG, WebP, GIF, BMP</p>
+  </div>
+  <input
+    type="file"
+    id="file-input"
+    class="file-input-hidden"
+    accept="image/jpeg,image/jpg,image/png,image/webp,image/gif,image/bmp"
+    aria-label="File upload input"
+  />
+</div>
+
+<div id="file-preview" class="file-preview hidden">
+  <div class="file-info-card">
+    <div class="file-info-header">
+      <svg
+        class="file-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+        />
+      </svg>
+      <div class="file-details">
+        <p id="file-name" class="file-name"></p>
+        <p id="file-size" class="file-size"></p>
+      </div>
+      <button
+        id="remove-file"
+        class="remove-btn"
+        aria-label="Remove selected file"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
+    <div id="image-preview-container" class="image-preview-container hidden">
+      <img id="image-preview" class="image-preview" alt="Preview of selected file" />
+    </div>
+  </div>
+</div>
+
+<style>
+  .upload-zone {
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 3rem 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--bg-secondary);
+    position: relative;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .upload-zone:hover,
+  .upload-zone.drag-over {
+    border-color: var(--accent-primary);
+    background: var(--bg-tertiary);
+    transform: translateY(-2px);
+  }
+
+  .upload-zone:focus-visible {
+    border-color: var(--accent-primary);
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+  }
+
+  .upload-content {
+    pointer-events: none;
+  }
+
+  .upload-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1rem;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+  }
+
+  .upload-zone:hover .upload-icon,
+  .upload-zone.drag-over .upload-icon {
+    color: var(--accent-primary);
+    transform: scale(1.1);
+  }
+
+  .upload-title {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+  }
+
+  .upload-subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+  }
+
+  .upload-hint {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    padding: 0.5rem 1rem;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    display: inline-block;
+  }
+
+  .file-input-hidden {
+    display: none;
+  }
+
+  .file-preview {
+    margin-top: 1.5rem;
+  }
+
+  .file-preview.hidden {
+    display: none;
+  }
+
+  .file-info-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .file-info-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .file-icon {
+    width: 40px;
+    height: 40px;
+    color: var(--accent-primary);
+    flex-shrink: 0;
+  }
+
+  .file-details {
+    flex: 1;
+    text-align: left;
+    min-width: 0;
+  }
+
+  .file-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .file-size {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  .remove-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .remove-btn:hover {
+    background: #dc2626;
+    border-color: #dc2626;
+    color: white;
+  }
+
+  .remove-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .image-preview-container {
+    margin-top: 1rem;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+  }
+
+  .image-preview-container.hidden {
+    display: none;
+  }
+
+  .image-preview {
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: contain;
+    background: var(--bg-primary);
+  }
+
+  @media (max-width: 640px) {
+    .upload-zone {
+      padding: 2rem 1rem;
+      min-height: 250px;
+    }
+
+    .upload-icon {
+      width: 48px;
+      height: 48px;
+    }
+
+    .file-info-card {
+      padding: 1rem;
+    }
+
+    .file-icon {
+      width: 32px;
+      height: 32px;
+    }
+  }
+</style>
+
+<script>
+  // File upload handling with drag and drop
+  const uploadZone = document.getElementById('upload-zone');
+  const fileInput = document.getElementById('file-input') as HTMLInputElement;
+  const filePreview = document.getElementById('file-preview');
+  const fileName = document.getElementById('file-name');
+  const fileSize = document.getElementById('file-size');
+  const removeBtn = document.getElementById('remove-file');
+  const imagePreviewContainer = document.getElementById('image-preview-container');
+  const imagePreview = document.getElementById('image-preview') as HTMLImageElement;
+
+  let selectedFile: File | null = null;
+
+  // Format file size
+  function formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+  }
+
+  // Handle file selection
+  function handleFileSelect(file: File) {
+    selectedFile = file;
+
+    if (fileName) fileName.textContent = file.name;
+    if (fileSize) fileSize.textContent = formatFileSize(file.size);
+    if (filePreview) filePreview.classList.remove('hidden');
+
+    // Show image preview for image files
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (imagePreview && e.target?.result) {
+          imagePreview.src = e.target.result as string;
+          imagePreviewContainer?.classList.remove('hidden');
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Dispatch custom event for other components
+    window.dispatchEvent(new CustomEvent('fileSelected', { detail: { file } }));
+  }
+
+  // Click to upload
+  uploadZone?.addEventListener('click', () => {
+    fileInput?.click();
+  });
+
+  // Keyboard accessibility
+  uploadZone?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      fileInput?.click();
+    }
+  });
+
+  // File input change
+  fileInput?.addEventListener('change', (e) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (file) {
+      handleFileSelect(file);
+    }
+  });
+
+  // Drag and drop
+  uploadZone?.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadZone.classList.add('drag-over');
+  });
+
+  uploadZone?.addEventListener('dragleave', () => {
+    uploadZone.classList.remove('drag-over');
+  });
+
+  uploadZone?.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadZone.classList.remove('drag-over');
+
+    const file = e.dataTransfer?.files?.[0];
+    if (file) {
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif', 'image/bmp'];
+      if (validTypes.includes(file.type)) {
+        handleFileSelect(file);
+      } else {
+        alert('Please select a valid image file (JPG, PNG, WebP, GIF, or BMP)');
+      }
+    }
+  });
+
+  // Remove file
+  removeBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    selectedFile = null;
+    if (fileInput) fileInput.value = '';
+    filePreview?.classList.add('hidden');
+    imagePreviewContainer?.classList.add('hidden');
+    window.dispatchEvent(new CustomEvent('fileRemoved'));
+  });
+
+  // Export for use by other scripts
+  (window as any).getSelectedFile = () => selectedFile;
+</script>

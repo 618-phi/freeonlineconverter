@@ -1,0 +1,26 @@
+{
+  "name": "web-converter",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/vercel": "^9.0.0",
+    "@tailwindcss/vite": "^4.1.17",
+    "@vercel/analytics": "^1.5.0",
+    "astro": "^5.15.8",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.3",
+    "mammoth": "^1.11.0",
+    "pdf-lib": "^1.17.1",
+    "sharp": "^0.33.5",
+    "tailwindcss": "^4.1.17"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  }
+}

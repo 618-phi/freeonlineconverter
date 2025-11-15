@@ -1,0 +1,133 @@
+{
+  "formats": {
+    "image": {
+      "client": [
+        "jpg",
+        "jpeg",
+        "png",
+        "webp",
+        "gif"
+      ],
+      "server": [
+        "jpg",
+        "jpeg",
+        "png",
+        "webp",
+        "gif",
+        "avif",
+        "tiff",
+        "bmp"
+      ]
+    }
+  },
+  "conversions": [
+    {
+      "from": "jpg",
+      "to": [
+        "png",
+        "webp",
+        "gif"
+      ],
+      "method": "client"
+    },
+    {
+      "from": "jpeg",
+      "to": [
+        "png",
+        "webp",
+        "gif"
+      ],
+      "method": "client"
+    },
+    {
+      "from": "png",
+      "to": [
+        "jpg",
+        "jpeg",
+        "webp",
+        "gif"
+      ],
+      "method": "client"
+    },
+    {
+      "from": "webp",
+      "to": [
+        "jpg",
+        "jpeg",
+        "png",
+        "gif"
+      ],
+      "method": "client"
+    },
+    {
+      "from": "gif",
+      "to": [
+        "jpg",
+        "jpeg",
+        "png",
+        "webp"
+      ],
+      "method": "client"
+    },
+    {
+      "from": "avif",
+      "to": [
+        "jpg",
+        "jpeg",
+        "png",
+        "webp"
+      ],
+      "method": "server"
+    },
+    {
+      "from": "tiff",
+      "to": [
+        "jpg",
+        "jpeg",
+        "png",
+        "webp",
+        "avif"
+      ],
+      "method": "server"
+    },
+    {
+      "from": "bmp",
+      "to": [
+        "jpg",
+        "jpeg",
+        "png",
+        "webp"
+      ],
+      "method": "server"
+    },
+    {
+      "from": "jpg",
+      "to": [
+        "avif",
+        "tiff"
+      ],
+      "method": "server"
+    },
+    {
+      "from": "png",
+      "to": [
+        "avif",
+        "tiff"
+      ],
+      "method": "server"
+    },
+    {
+      "from": "webp",
+      "to": [
+        "avif",
+        "tiff"
+      ],
+      "method": "server"
+    }
+  ],
+  "limits": {
+    "maxFileSize": 10485760,
+    "maxDimensions": 4096,
+    "minDimensions": 1
+  }
+}

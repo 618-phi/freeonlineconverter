@@ -1,0 +1,12 @@
+DEPLOYMENT VERIFICATION
+======================
+Repository: 618-phi/freeonlineconverter
+Branch: main
+Timestamp: 2025-11-15 19:00 UTC
+Commit: Should match latest push with esbuild fix
+
+If you see this file at https://freeonlineconverter.vercel.app/verify-deployment.txt
+then Vercel IS reading from the correct repository.
+
+If this file doesn't exist on the live site, Vercel is NOT connected
+to the correct repository or there's a configuration issue.

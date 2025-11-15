@@ -1,0 +1,242 @@
+---
+// DownloadButton component - Styled download button with success animation
+---
+
+<div id="download-container" class="download-container hidden">
+  <div class="download-card">
+    <div class="success-animation">
+      <svg
+        class="success-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+    </div>
+
+    <div class="download-content">
+      <h3 class="download-title">Conversion Complete!</h3>
+      <p class="download-subtitle">Your file is ready to download</p>
+
+      <div class="download-actions">
+        <button
+          id="download-btn"
+          class="btn btn-primary download-btn"
+          aria-label="Download converted file"
+        >
+          <svg
+            class="btn-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+            />
+          </svg>
+          Download File
+        </button>
+
+        <button
+          id="convert-another-btn"
+          class="btn btn-secondary"
+          aria-label="Convert another file"
+        >
+          <svg
+            class="btn-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          Convert Another
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .download-container {
+    margin-top: 2rem;
+  }
+
+  .download-container.hidden {
+    display: none;
+  }
+
+  .download-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+    text-align: center;
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .success-animation {
+    display: inline-flex;
+    margin-bottom: 1.5rem;
+  }
+
+  .success-icon {
+    width: 64px;
+    height: 64px;
+    color: #10b981;
+    animation: successPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  @keyframes successPop {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .download-content {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .download-title {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .download-subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+  }
+
+  .download-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .download-actions {
+      flex-direction: row;
+      justify-content: center;
+    }
+  }
+
+  .download-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+
+  .download-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .btn-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  @media (max-width: 640px) {
+    .download-card {
+      padding: 1.5rem;
+    }
+
+    .success-icon {
+      width: 48px;
+      height: 48px;
+    }
+
+    .download-title {
+      font-size: 1.25rem;
+    }
+  }
+</style>
+
+<script>
+  const downloadContainer = document.getElementById('download-container');
+  const downloadBtn = document.getElementById('download-btn');
+  const convertAnotherBtn = document.getElementById('convert-another-btn');
+
+  let convertedFileUrl: string | null = null;
+  let convertedFileName: string | null = null;
+
+  // Show download section
+  function showDownload(fileUrl: string, fileName: string) {
+    convertedFileUrl = fileUrl;
+    convertedFileName = fileName;
+    downloadContainer?.classList.remove('hidden');
+  }
+
+  // Hide download section
+  function hideDownload() {
+    downloadContainer?.classList.add('hidden');
+    if (convertedFileUrl) {
+      URL.revokeObjectURL(convertedFileUrl);
+      convertedFileUrl = null;
+    }
+  }
+
+  // Download file
+  downloadBtn?.addEventListener('click', () => {
+    if (convertedFileUrl && convertedFileName) {
+      const link = document.createElement('a');
+      link.href = convertedFileUrl;
+      link.download = convertedFileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  });
+
+  // Convert another file
+  convertAnotherBtn?.addEventListener('click', () => {
+    hideDownload();
+    (window as any).hideProgress?.();
+
+    // Reset file input
+    const fileInput = document.getElementById('file-input') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+
+    // Hide file preview
+    const filePreview = document.getElementById('file-preview');
+    filePreview?.classList.add('hidden');
+
+    // Reset format selector
+    const outputFormat = document.getElementById('output-format') as HTMLSelectElement;
+    if (outputFormat) outputFormat.value = '';
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // Export functions for use by other scripts
+  (window as any).showDownload = showDownload;
+  (window as any).hideDownload = hideDownload;
+</script>

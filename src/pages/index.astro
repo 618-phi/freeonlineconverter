@@ -1,0 +1,837 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="File Converter" description="Convert and compress files">
+  <main class="min-h-screen bg-black text-white flex items-center justify-center p-6">
+    <div class="w-full max-w-3xl">
+
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <h1 class="text-5xl md:text-6xl font-bold mb-3 tracking-tight">
+          File Converter
+        </h1>
+        <p class="text-zinc-400 text-lg">
+          Convert and compress your files instantly
+        </p>
+      </div>
+
+      <!-- Upload Zone -->
+      <div id="upload-zone" class="upload-zone">
+        <input type="file" id="file-input" class="hidden" accept="image/*,.pdf,.doc,.docx,.txt,.md" />
+
+        <!-- Initial State -->
+        <div id="upload-prompt" class="text-center">
+          <div class="upload-icon-wrapper">
+            <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold mb-2">Upload your file</h3>
+          <p class="text-sm text-zinc-500 mb-4">
+            Drag and drop or click to browse
+          </p>
+          <div class="flex flex-wrap justify-center gap-2 text-xs text-zinc-600">
+            <span class="format-badge">PNG</span>
+            <span class="format-badge">JPEG</span>
+            <span class="format-badge">WebP</span>
+            <span class="format-badge">GIF</span>
+            <span class="format-badge">PDF</span>
+            <span class="format-badge">+more</span>
+          </div>
+        </div>
+
+        <!-- File Info -->
+        <div id="file-info" class="hidden">
+          <div class="flex items-center justify-between mb-6 pb-6 border-b border-zinc-800">
+            <div class="flex items-center gap-3">
+              <div class="file-icon-circle">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+              </div>
+              <div>
+                <p id="file-name" class="text-sm font-medium"></p>
+                <p id="file-size" class="text-xs text-zinc-500"></p>
+              </div>
+            </div>
+            <button id="remove-file" class="remove-btn">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Mode Selection -->
+          <div class="mb-6">
+            <label class="block text-sm font-medium mb-3 text-zinc-300">Mode</label>
+            <div class="mode-grid">
+              <button id="mode-convert" class="mode-card active">
+                <svg class="w-5 h-5 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                <span class="text-sm font-medium">Convert</span>
+              </button>
+              <button id="mode-compress" class="mode-card">
+                <svg class="w-5 h-5 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7c-2 0-3 1-3 3z M8 3v18 M16 3v18"/>
+                </svg>
+                <span class="text-sm font-medium">Compress</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Convert Options -->
+          <div id="convert-opts" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-2 text-zinc-300">Output Format</label>
+              <select id="format" class="input-field">
+                <!-- Image formats -->
+                <optgroup id="image-formats" label="Image Formats">
+                  <option>PNG</option>
+                  <option>JPEG</option>
+                  <option>WebP</option>
+                  <option>GIF</option>
+                  <option>BMP</option>
+                  <option>AVIF</option>
+                  <option>TIFF</option>
+                  <option>ICO</option>
+                </optgroup>
+                <!-- Document formats -->
+                <optgroup id="doc-formats" label="Document Formats">
+                  <option>PDF</option>
+                  <option>TXT</option>
+                  <option>HTML</option>
+                  <option>Markdown</option>
+                </optgroup>
+              </select>
+            </div>
+            <div>
+              <div class="flex justify-between text-sm mb-2">
+                <label class="font-medium text-zinc-300">Quality</label>
+                <span id="quality-val" class="text-zinc-500">90%</span>
+              </div>
+              <input type="range" id="quality" min="1" max="100" value="90" class="slider">
+            </div>
+            <button id="convert-btn" class="action-btn">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+              Convert File
+            </button>
+          </div>
+
+          <!-- Compress Options -->
+          <div id="compress-opts" class="hidden space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-2 text-zinc-300">Compression Level</label>
+              <select id="compress-level" class="input-field">
+                <option value="85">Light (85% quality)</option>
+                <option value="70">Medium (70% quality)</option>
+                <option value="50">Heavy (50% quality)</option>
+              </select>
+            </div>
+            <button id="compress-btn" class="action-btn">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+              Compress File
+            </button>
+          </div>
+        </div>
+
+        <!-- Progress -->
+        <div id="progress" class="hidden text-center py-8">
+          <div class="spinner mb-4"></div>
+          <p class="text-sm font-medium mb-1">Processing your file...</p>
+          <p class="text-xs text-zinc-500">This will only take a moment</p>
+        </div>
+
+        <!-- Complete -->
+        <div id="complete" class="hidden text-center py-8">
+          <div class="success-icon mb-4">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-1">Ready to download!</h3>
+          <p id="savings" class="text-sm text-zinc-500 mb-6 hidden"></p>
+          <button id="download-btn" class="action-btn mb-3">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            Download File
+          </button>
+          <button id="reset-btn" class="text-sm text-zinc-500 hover:text-white transition-colors">
+            Convert another file
+          </button>
+        </div>
+      </div>
+
+      <!-- Footer Info -->
+      <div class="text-center mt-8 text-xs text-zinc-600">
+        <p>Free • No signup required • Files processed locally</p>
+      </div>
+
+      <!-- SEO Content Section (Hidden visually but crawlable by search engines) -->
+      <article class="sr-only" aria-hidden="true">
+        <section>
+          <h2 class="text-xl font-semibold text-white mb-3">Free Online File Converter</h2>
+          <p class="leading-relaxed">
+            Convert your files instantly with our free online file converter. Support for all major image formats including PNG, JPEG, WebP, GIF, BMP, AVIF, TIFF, and ICO. Also convert documents between PDF, TXT, HTML, and Markdown formats. No registration required, completely free to use.
+          </p>
+        </section>
+
+        <section>
+          <h3 class="text-lg font-semibold text-white mb-3">Image Format Conversion</h3>
+          <p class="leading-relaxed mb-3">
+            Convert images between popular formats quickly and easily. Our tool supports:
+          </p>
+          <ul class="list-disc list-inside space-y-1 pl-4">
+            <li><strong>PNG to JPEG</strong> - Convert PNG images to JPEG format for smaller file sizes</li>
+            <li><strong>JPEG to PNG</strong> - Convert JPEG to PNG for lossless quality and transparency support</li>
+            <li><strong>WebP Conversion</strong> - Modern format with superior compression and quality</li>
+            <li><strong>GIF Conversion</strong> - Convert to and from GIF format</li>
+            <li><strong>AVIF Support</strong> - Next-generation image format with excellent compression</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3 class="text-lg font-semibold text-white mb-3">Privacy-Focused & Secure</h3>
+          <p class="leading-relaxed">
+            Your privacy is our priority. All file conversions happen directly in your browser - files are never uploaded to our servers. We automatically remove EXIF metadata from images to protect your privacy, including GPS location data, camera information, and timestamps.
+          </p>
+        </section>
+
+        <section>
+          <h3 class="text-lg font-semibold text-white mb-3">Features</h3>
+          <ul class="list-disc list-inside space-y-1 pl-4">
+            <li>Convert multiple file formats instantly</li>
+            <li>Adjust image quality for optimal file size</li>
+            <li>Compress images to reduce file size</li>
+            <li>No file size limits</li>
+            <li>No registration or sign-up required</li>
+            <li>100% free to use</li>
+            <li>Automatic EXIF data removal for privacy</li>
+            <li>Fast, browser-based processing</li>
+            <li>Works on desktop and mobile devices</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3 class="text-lg font-semibold text-white mb-3">Why Choose Our File Converter?</h3>
+          <p class="leading-relaxed">
+            Unlike other online converters that require uploads and downloads, our tool processes everything locally in your browser. This means faster conversions, better privacy, and no waiting in queues. Whether you need to convert a single image or work with documents, our converter handles it all with ease.
+          </p>
+        </section>
+
+        <section>
+          <h3 class="text-lg font-semibold text-white mb-3">Supported Formats</h3>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <h4 class="font-semibold text-zinc-400 mb-2">Image Formats:</h4>
+              <p>PNG, JPEG, JPG, WebP, GIF, BMP, AVIF, TIFF, ICO</p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-zinc-400 mb-2">Document Formats:</h4>
+              <p>PDF, TXT, HTML, Markdown</p>
+            </div>
+          </div>
+        </section>
+      </article>
+
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .upload-zone {
+    border: 2px dashed #27272a;
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .upload-zone:hover {
+    border-color: #3f3f46;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  }
+
+  .upload-zone.drag-over {
+    border-color: #52525b;
+    background: rgba(255, 255, 255, 0.05);
+    border-style: solid;
+  }
+
+  .upload-zone.has-file {
+    cursor: default;
+    border-style: solid;
+  }
+
+  .upload-icon-wrapper {
+    display: inline-block;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 50%;
+    margin-bottom: 1.5rem;
+  }
+
+  .upload-icon {
+    width: 3rem;
+    height: 3rem;
+    color: #71717a;
+  }
+
+  .format-badge {
+    padding: 0.25rem 0.625rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    border: 1px solid #27272a;
+  }
+
+  .file-icon-circle {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .remove-btn {
+    padding: 0.5rem;
+    color: #71717a;
+    transition: color 0.2s;
+    border-radius: 6px;
+  }
+
+  .remove-btn:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .mode-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .mode-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.25rem 1rem;
+    border: 1px solid #27272a;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    color: #71717a;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .mode-card:hover {
+    border-color: #3f3f46;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .mode-card.active {
+    border-color: white;
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+  }
+
+  .input-field {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    padding-right: 2.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid #27272a;
+    border-radius: 8px;
+    color: white;
+    font-size: 0.875rem;
+    outline: none;
+    transition: all 0.2s;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a1a1aa' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 12px;
+  }
+
+  .input-field:hover {
+    border-color: #3f3f46;
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .input-field:focus {
+    border-color: #52525b;
+    background-color: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+  }
+
+  .input-field option {
+    background: #18181b;
+    color: white;
+    padding: 0.5rem;
+  }
+
+  .input-field optgroup {
+    background: #09090b;
+    color: #71717a;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #27272a;
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+  .slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+  .action-btn {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    background: white;
+    color: black;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255,255,255,0.1);
+  }
+
+  .action-btn:active {
+    transform: translateY(0);
+  }
+
+  .spinner {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 3px solid #27272a;
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .success-icon {
+    width: 4rem;
+    height: 4rem;
+    background: rgba(34, 197, 94, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    color: #22c55e;
+  }
+
+  @media (max-width: 640px) {
+    .upload-zone {
+      padding: 2rem 1.5rem;
+    }
+
+    .mode-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  const fileInput = document.getElementById('file-input') as HTMLInputElement;
+  const uploadZone = document.getElementById('upload-zone') as HTMLDivElement;
+  const uploadPrompt = document.getElementById('upload-prompt') as HTMLDivElement;
+  const fileInfo = document.getElementById('file-info') as HTMLDivElement;
+  const progress = document.getElementById('progress') as HTMLDivElement;
+  const complete = document.getElementById('complete') as HTMLDivElement;
+
+  const fileName = document.getElementById('file-name') as HTMLParagraphElement;
+  const fileSize = document.getElementById('file-size') as HTMLParagraphElement;
+  const removeFile = document.getElementById('remove-file') as HTMLButtonElement;
+
+  const modeConvert = document.getElementById('mode-convert') as HTMLButtonElement;
+  const modeCompress = document.getElementById('mode-compress') as HTMLButtonElement;
+  const convertOpts = document.getElementById('convert-opts') as HTMLDivElement;
+  const compressOpts = document.getElementById('compress-opts') as HTMLDivElement;
+
+  const formatSelect = document.getElementById('format') as HTMLSelectElement;
+  const qualitySlider = document.getElementById('quality') as HTMLInputElement;
+  const qualityVal = document.getElementById('quality-val') as HTMLSpanElement;
+  const compressLevel = document.getElementById('compress-level') as HTMLSelectElement;
+
+  const convertBtn = document.getElementById('convert-btn') as HTMLButtonElement;
+  const compressBtn = document.getElementById('compress-btn') as HTMLButtonElement;
+  const downloadBtn = document.getElementById('download-btn') as HTMLButtonElement;
+  const resetBtn = document.getElementById('reset-btn') as HTMLButtonElement;
+  const savings = document.getElementById('savings') as HTMLParagraphElement;
+
+  let currentFile: File | null = null;
+  let resultBlob: Blob | null = null;
+  let mode: 'convert' | 'compress' = 'convert';
+
+  // Click to upload
+  uploadZone.addEventListener('click', (e) => {
+    if (!uploadZone.classList.contains('has-file') && e.target !== removeFile) {
+      fileInput.click();
+    }
+  });
+
+  // File selected
+  fileInput.addEventListener('change', (e) => {
+    const files = (e.target as HTMLInputElement).files;
+    if (files && files.length > 0) {
+      handleFile(files[0]);
+    }
+  });
+
+  // Drag and drop
+  uploadZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    if (!uploadZone.classList.contains('has-file')) {
+      uploadZone.classList.add('drag-over');
+    }
+  });
+
+  uploadZone.addEventListener('dragleave', () => {
+    uploadZone.classList.remove('drag-over');
+  });
+
+  uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadZone.classList.remove('drag-over');
+    if (!uploadZone.classList.contains('has-file')) {
+      const files = e.dataTransfer?.files;
+      if (files && files.length > 0) {
+        handleFile(files[0]);
+      }
+    }
+  });
+
+  // Handle file
+  function handleFile(file: File) {
+    currentFile = file;
+    fileName.textContent = file.name;
+    fileSize.textContent = formatFileSize(file.size);
+
+    // Detect file type and show only relevant options
+    const imageFormatsGroup = document.getElementById('image-formats') as HTMLOptGroupElement;
+    const docFormatsGroup = document.getElementById('doc-formats') as HTMLOptGroupElement;
+
+    const isImage = file.type.startsWith('image/');
+    const isDocument = file.type.includes('pdf') ||
+                       file.type.includes('document') ||
+                       file.type.includes('word') ||
+                       file.type.includes('text') ||
+                       file.name.endsWith('.doc') ||
+                       file.name.endsWith('.docx') ||
+                       file.name.endsWith('.txt') ||
+                       file.name.endsWith('.md');
+
+    if (isImage) {
+      // Show only image formats
+      imageFormatsGroup.style.display = '';
+      docFormatsGroup.style.display = 'none';
+      // Select first image format
+      (imageFormatsGroup.querySelector('option') as HTMLOptionElement).selected = true;
+    } else if (isDocument) {
+      // Show only document formats
+      imageFormatsGroup.style.display = 'none';
+      docFormatsGroup.style.display = '';
+      // Select first document format
+      (docFormatsGroup.querySelector('option') as HTMLOptionElement).selected = true;
+    } else {
+      // Unknown type - show all options
+      imageFormatsGroup.style.display = '';
+      docFormatsGroup.style.display = '';
+    }
+
+    uploadZone.classList.add('has-file');
+    uploadPrompt.classList.add('hidden');
+    fileInfo.classList.remove('hidden');
+  }
+
+  // Remove file
+  removeFile.addEventListener('click', (e) => {
+    e.stopPropagation();
+    reset();
+  });
+
+  // Mode toggle
+  modeConvert.addEventListener('click', () => {
+    mode = 'convert';
+    modeConvert.classList.add('active');
+    modeCompress.classList.remove('active');
+    convertOpts.classList.remove('hidden');
+    compressOpts.classList.add('hidden');
+  });
+
+  modeCompress.addEventListener('click', () => {
+    mode = 'compress';
+    modeCompress.classList.add('active');
+    modeConvert.classList.remove('active');
+    compressOpts.classList.remove('hidden');
+    convertOpts.classList.add('hidden');
+  });
+
+  // Quality slider
+  qualitySlider.addEventListener('input', (e) => {
+    qualityVal.textContent = (e.target as HTMLInputElement).value + '%';
+  });
+
+  // Convert
+  convertBtn.addEventListener('click', async () => {
+    if (!currentFile) return;
+
+    fileInfo.classList.add('hidden');
+    progress.classList.remove('hidden');
+
+    try {
+      const format = formatSelect.value.toLowerCase();
+      const quality = parseInt(qualitySlider.value) / 100;
+
+      resultBlob = await convertImage(currentFile, format, quality);
+
+      progress.classList.add('hidden');
+      complete.classList.remove('hidden');
+    } catch (error) {
+      alert('Error: ' + error);
+      reset();
+    }
+  });
+
+  // Compress
+  compressBtn.addEventListener('click', async () => {
+    if (!currentFile) return;
+
+    fileInfo.classList.add('hidden');
+    progress.classList.remove('hidden');
+
+    try {
+      const quality = parseInt(compressLevel.value) / 100;
+      resultBlob = await convertImage(currentFile, 'jpeg', quality);
+
+      const originalSize = currentFile.size;
+      const newSize = resultBlob.size;
+      const reduction = Math.round((1 - newSize / originalSize) * 100);
+
+      savings.textContent = `File size reduced by ${reduction}%`;
+      savings.classList.remove('hidden');
+
+      progress.classList.add('hidden');
+      complete.classList.remove('hidden');
+    } catch (error) {
+      alert('Error: ' + error);
+      reset();
+    }
+  });
+
+  // Download
+  downloadBtn.addEventListener('click', () => {
+    if (!resultBlob || !currentFile) return;
+
+    const url = URL.createObjectURL(resultBlob);
+    const a = document.createElement('a');
+    a.href = url;
+
+    const ext = mode === 'convert' ? formatSelect.value.toLowerCase() : 'jpg';
+    const baseName = currentFile.name.replace(/\.[^/.]+$/, '');
+    a.download = `${baseName}_${mode}.${ext}`;
+
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // Reset
+  resetBtn.addEventListener('click', reset);
+
+  function reset() {
+    currentFile = null;
+    resultBlob = null;
+    fileInput.value = '';
+
+    uploadZone.classList.remove('has-file');
+    complete.classList.add('hidden');
+    progress.classList.add('hidden');
+    fileInfo.classList.add('hidden');
+    uploadPrompt.classList.remove('hidden');
+    savings.classList.add('hidden');
+
+    // Reset format selector to show all options
+    const imageFormatsGroup = document.getElementById('image-formats') as HTMLOptGroupElement;
+    const docFormatsGroup = document.getElementById('doc-formats') as HTMLOptGroupElement;
+    imageFormatsGroup.style.display = '';
+    docFormatsGroup.style.display = '';
+
+    mode = 'convert';
+    modeConvert.classList.add('active');
+    modeCompress.classList.remove('active');
+    convertOpts.classList.remove('hidden');
+    compressOpts.classList.add('hidden');
+  }
+
+  async function convertImage(file: File, format: string, quality: number): Promise<Blob> {
+    const isImage = file.type.startsWith('image/');
+    const isDocument = file.type.includes('pdf') || file.type.includes('document') || file.type.includes('word') || file.type.includes('text');
+
+    if (isDocument) {
+      return convertDocument(file, format);
+    }
+
+    // Image conversion - STRIPS ALL METADATA FOR PRIVACY
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        const img = new Image();
+
+        img.onload = () => {
+          // Create clean canvas - NO METADATA PRESERVED
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            reject(new Error('Could not get canvas context'));
+            return;
+          }
+
+          // Draw image to canvas - THIS REMOVES ALL EXIF/METADATA
+          ctx.drawImage(img, 0, 0);
+
+          // Convert to blob WITHOUT any metadata
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                resolve(blob);
+              } else {
+                reject(new Error('Failed to convert image'));
+              }
+            },
+            `image/${format === 'jpg' ? 'jpeg' : format}`,
+            quality
+          );
+        };
+
+        img.onerror = () => reject(new Error('Failed to load image'));
+        img.src = e.target?.result as string;
+      };
+
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function convertDocument(file: File, format: string): Promise<Blob> {
+    // For now, basic document conversion
+    // PDF, DOCX, DOC -> TXT, HTML, etc.
+
+    if (format.toLowerCase() === 'txt') {
+      return convertToText(file);
+    } else if (format.toLowerCase() === 'pdf') {
+      return convertToPDF(file);
+    } else if (format.toLowerCase() === 'html') {
+      return convertToHTML(file);
+    } else if (format.toLowerCase() === 'markdown') {
+      return convertToMarkdown(file);
+    }
+
+    throw new Error('Unsupported document conversion');
+  }
+
+  async function convertToText(file: File): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        const text = e.target?.result as string;
+        const blob = new Blob([text], { type: 'text/plain' });
+        resolve(blob);
+      };
+
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsText(file);
+    });
+  }
+
+  async function convertToPDF(file: File): Promise<Blob> {
+    // Basic conversion to PDF using text content
+    const textBlob = await convertToText(file);
+    const text = await textBlob.text();
+
+    // Create simple PDF (basic implementation)
+    const pdfContent = `%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n3 0 obj\n<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >> >> /Contents 4 0 R >>\nendobj\n4 0 obj\n<< /Length ${text.length} >>\nstream\nBT /F1 12 Tf 50 750 Td (${text.replace(/\n/g, ') Tj T* (')}) Tj ET\nendstream\nendobj\nxref\n0 5\n0000000000 65535 f\n0000000009 00000 n\n0000000058 00000 n\n0000000115 00000 n\n0000000274 00000 n\ntrailer\n<< /Size 5 /Root 1 0 R >>\nstartxref\n${350 + text.length}\n%%EOF`;
+
+    return new Blob([pdfContent], { type: 'application/pdf' });
+  }
+
+  async function convertToHTML(file: File): Promise<Blob> {
+    const textBlob = await convertToText(file);
+    const text = await textBlob.text();
+
+    const html = `<!DOCTYPE html>\n<html>\n<head>\n<meta charset="UTF-8">\n<title>Converted Document</title>\n</head>\n<body>\n<pre>${text}</pre>\n</body>\n</html>`;
+
+    return new Blob([html], { type: 'text/html' });
+  }
+
+  async function convertToMarkdown(file: File): Promise<Blob> {
+    const textBlob = await convertToText(file);
+    const text = await textBlob.text();
+
+    // Basic markdown formatting
+    const markdown = `# Converted Document\n\n${text}`;
+
+    return new Blob([markdown], { type: 'text/markdown' });
+  }
+
+  function formatFileSize(bytes: number): string {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+</script>

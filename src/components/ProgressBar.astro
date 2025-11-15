@@ -1,0 +1,191 @@
+---
+// ProgressBar component - Animated progress indicator
+---
+
+<div id="progress-container" class="progress-container hidden">
+  <div class="progress-card">
+    <div class="progress-header">
+      <div class="spinner" aria-label="Loading"></div>
+      <div>
+        <h3 id="progress-title" class="progress-title">Converting...</h3>
+        <p id="progress-status" class="progress-status">Please wait</p>
+      </div>
+    </div>
+
+    <div class="progress-bar-container">
+      <div id="progress-bar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar-fill"></div>
+      </div>
+      <span id="progress-percentage" class="progress-percentage">0%</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .progress-container {
+    margin-top: 2rem;
+  }
+
+  .progress-container.hidden {
+    display: none;
+  }
+
+  .progress-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .progress-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--bg-tertiary);
+    border-top-color: var(--accent-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    flex-shrink: 0;
+  }
+
+  .progress-title {
+    color: var(--text-primary);
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .progress-status {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .progress-bar-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--accent-gradient);
+    border-radius: var(--radius-sm);
+    transition: width 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent
+    );
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .progress-percentage {
+    font-weight: 600;
+    color: var(--accent-primary);
+    min-width: 50px;
+    text-align: right;
+  }
+
+  @media (max-width: 640px) {
+    .progress-card {
+      padding: 1.5rem;
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+    }
+
+    .progress-title {
+      font-size: 1rem;
+    }
+  }
+</style>
+
+<script>
+  const progressContainer = document.getElementById('progress-container');
+  const progressBar = document.getElementById('progress-bar');
+  const progressBarFill = progressBar?.querySelector('.progress-bar-fill') as HTMLElement;
+  const progressPercentage = document.getElementById('progress-percentage');
+  const progressTitle = document.getElementById('progress-title');
+  const progressStatus = document.getElementById('progress-status');
+
+  // Show progress bar
+  function showProgress() {
+    progressContainer?.classList.remove('hidden');
+  }
+
+  // Hide progress bar
+  function hideProgress() {
+    progressContainer?.classList.add('hidden');
+    updateProgress(0);
+  }
+
+  // Update progress
+  function updateProgress(percentage: number, status?: string) {
+    if (progressBarFill) {
+      progressBarFill.style.width = `${percentage}%`;
+    }
+    if (progressPercentage) {
+      progressPercentage.textContent = `${Math.round(percentage)}%`;
+    }
+    if (progressBar) {
+      progressBar.setAttribute('aria-valuenow', percentage.toString());
+    }
+    if (status && progressStatus) {
+      progressStatus.textContent = status;
+    }
+  }
+
+  // Update progress title
+  function updateProgressTitle(title: string) {
+    if (progressTitle) {
+      progressTitle.textContent = title;
+    }
+  }
+
+  // Export functions for use by other scripts
+  (window as any).showProgress = showProgress;
+  (window as any).hideProgress = hideProgress;
+  (window as any).updateProgress = updateProgress;
+  (window as any).updateProgressTitle = updateProgressTitle;
+</script>

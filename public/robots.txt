@@ -1,0 +1,33 @@
+# robots.txt for File Converter
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://freeonlineconverter.vercel.app/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 0
+
+# Specific bots
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+# Block bad bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
