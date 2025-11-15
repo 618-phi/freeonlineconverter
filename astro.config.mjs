@@ -7,7 +7,7 @@ import vercel from '@astrojs/vercel';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://freeonlineconverter.vercel.app', // IMPORTANT: Replace with your actual Vercel URL
+  site: 'https://web-converter-ten.vercel.app',
 
   vite: {
     plugins: [tailwindcss()],
