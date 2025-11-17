@@ -6,7 +6,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "generate-icons": "node scripts/generate-icons.js"
   },
   "dependencies": {
     "@astrojs/vercel": "^9.0.0",

@@ -68,7 +68,8 @@ const jsonLd = {
     <meta name="keywords" content="file converter, image converter, convert jpg to png, convert png to jpeg, webp converter, gif converter, pdf converter, online converter, free converter, image compression, document converter, convert files online, no registration, privacy-focused, EXIF removal, batch converter" />
     <meta name="author" content="File Converter" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#667eea" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#667eea" media="(prefers-color-scheme: dark)" />
 
     <!-- Canonical URL -->
     <link rel="canonical" href={canonical} />
@@ -102,14 +103,20 @@ const jsonLd = {
     <link rel="manifest" href="/manifest.json" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="File Converter" />
 
     <!-- Icons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+
+    <!-- Apple Touch Icons (optimized for dark mode) -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167x167.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png" />
 
     <!-- Preconnect for Performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -124,6 +131,43 @@ const jsonLd = {
   <body>
     <slot />
     <script is:inline src="https://va.vercel-scripts.com/v1/script.debug.js" defer></script>
+
+    <!-- Service Worker Registration -->
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('ServiceWorker registered:', registration.scope);
+
+              // Check for updates
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // New service worker available, prompt user to reload
+                    if (confirm('New version available! Reload to update?')) {
+                      newWorker.postMessage({ type: 'SKIP_WAITING' });
+                      window.location.reload();
+                    }
+                  }
+                });
+              });
+            })
+            .catch((error) => {
+              console.log('ServiceWorker registration failed:', error);
+            });
+
+          // Reload page when new service worker takes control
+          let refreshing;
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (refreshing) return;
+            refreshing = true;
+            window.location.reload();
+          });
+        });
+      }
+    </script>
   </body>
 </html>
 
